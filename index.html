@@ -20,10 +20,10 @@
     <!-- Conteneur pour l'interface utilisateur -->
     <div id="ui-container">
         
-        <!-- Conteneur pour les éléments du haut -->
         <div id="top-ui">
             <div id="top-buttons">
                 <div id="currency-display">Fragments: 1000</div>
+                <button id="battle-view-button">Voir le Combat</button>
                 <button id="inventory-button">Inventaire</button>
             </div>
             <div class="info-panel">
@@ -31,8 +31,10 @@
                 <p id="item-stats-label">Cliquez pour forger votre destin !</p>
             </div>
         </div>
+        
+        <!-- Ce panneau est maintenant caché et sert uniquement de conteneur logique si nécessaire -->
+        <div id="autobattle-panel" class="hidden"></div>
 
-        <!-- Conteneur pour les boutons du bas -->
         <div id="bottom-actions">
             <button id="dismantle-button" class="hidden">DÉMANTELER</button>
             <button id="forge-button">FORGER</button>
@@ -40,14 +42,37 @@
 
     </div>
 
-    <!-- Panneau de l'inventaire, caché par défaut -->
+    <!-- Fenêtre modale pour la visualisation du combat, cachée par défaut -->
+    <div id="battle-modal" class="hidden">
+        <div id="battle-content">
+            <h2>Combat en Cours</h2>
+            <div id="battle-arena">
+                <div class="fighter-card" id="champion-card">
+                    <h3>Votre Champion</h3>
+                    <p>Puissance: <strong id="modal-champion-power">0</strong></p>
+                    <p class="fragments-gain">+<span id="modal-fragments-per-second">0</span> Frag/s</p>
+                </div>
+                <div class="fighter-card" id="monster-card">
+                    <h3 id="modal-monster-name">Monstre</h3>
+                    <div id="modal-monster-progress-bar">
+                        <div id="modal-monster-progress-fill"></div>
+                    </div>
+                    <!-- Élément pour l'animation de dégâts -->
+                    <div id="damage-flash"></div>
+                </div>
+            </div>
+            <button id="battle-modal-close-button">Retour à la Forge</button>
+        </div>
+    </div>
+
+    <!-- Fenêtre modale de l'inventaire, cachée par défaut -->
     <div id="inventory-panel" class="hidden">
         <div id="inventory-content">
             <h2>Votre Collection</h2>
             <div id="inventory-list">
                 <!-- Les objets seront ajoutés ici par JavaScript -->
             </div>
-            <p id="inventory-instructions">Cliquez sur un objet pour le sélectionner pour une amélioration. Cliquez sur un second objet pour le sacrifier.</p>
+            <p id="inventory-instructions">Cliquez sur un objet pour le sélectionner. Cliquez sur un second pour le sacrifier.</p>
             <button id="inventory-close-button">Fermer</button>
         </div>
     </div>

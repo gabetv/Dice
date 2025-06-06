@@ -4,7 +4,7 @@
     --color-text: #f0f0f0;
     --color-text-subtle: #a0a0b0;
     --color-background: #12121c;
-    --color-accent: #8a2be2; /* Violet épique */
+    --color-accent: #8a2be2;
     --panel-background: rgba(25, 25, 40, 0.85);
 }
 
@@ -59,19 +59,21 @@ body, html {
     align-items: center;
     width: 90%;
     max-width: 500px;
+    gap: 10px;
 }
 
 #currency-display {
     background: rgba(0, 0, 0, 0.4);
-    padding: 8px 20px;
+    padding: 8px 16px;
     border-radius: 20px;
-    font-size: 1.1em;
+    font-size: 1em;
     font-weight: 600;
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(5px);
+    white-space: nowrap;
 }
 
-#inventory-button {
+#inventory-button, #battle-view-button {
     pointer-events: all;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -81,9 +83,10 @@ body, html {
     cursor: pointer;
     font-family: var(--font-primary);
     font-weight: 600;
+    font-size: 0.9em;
     transition: background-color 0.2s ease;
 }
-#inventory-button:hover {
+#inventory-button:hover, #battle-view-button:hover {
     background: rgba(255, 255, 255, 0.2);
 }
 
@@ -114,6 +117,11 @@ body, html {
     font-size: 0.9em;
     font-weight: 400;
     color: var(--color-text-subtle);
+}
+
+/* --- Panneau Auto-Battler --- */
+#autobattle-panel {
+    display: none; /* Remplacé par la fenêtre modale */
 }
 
 /* --- Éléments du Bas --- */
@@ -180,8 +188,8 @@ body, html {
     color: white;
 }
 
-/* --- Panneau d'Inventaire --- */
-#inventory-panel {
+/* --- Fenêtres Modales (Inventaire & Combat) --- */
+#inventory-panel, #battle-modal {
     position: absolute;
     top: 0;
     left: 0;
@@ -196,7 +204,7 @@ body, html {
     pointer-events: all;
 }
 
-#inventory-content {
+#inventory-content, #battle-content {
     background: var(--panel-background);
     width: 90%;
     max-width: 600px;
@@ -209,7 +217,7 @@ body, html {
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
-#inventory-content h2 {
+#inventory-content h2, #battle-content h2 {
     text-align: center;
     margin-top: 0;
 }
@@ -239,16 +247,9 @@ body, html {
     background: rgba(138, 43, 226, 0.3);
 }
 
-.inventory-item p {
-    margin: 0;
-}
-.inventory-item .item-name {
-    font-weight: 600;
-}
-.inventory-item .item-power {
-    font-size: 0.9em;
-    color: var(--color-text-subtle);
-}
+.inventory-item p { margin: 0; }
+.inventory-item .item-name { font-weight: 600; }
+.inventory-item .item-power { font-size: 0.9em; color: var(--color-text-subtle); }
 
 #inventory-instructions {
     text-align: center;
@@ -257,7 +258,7 @@ body, html {
     margin-top: 15px;
 }
 
-#inventory-close-button {
+#inventory-close-button, #battle-modal-close-button {
     pointer-events: all;
     margin-top: 20px;
     padding: 12px;
@@ -269,6 +270,74 @@ body, html {
     font-weight: 600;
     font-size: 1em;
     cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* --- Styles Spécifiques au Combat --- */
+#battle-arena {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin: 20px 0;
+    gap: 20px;
+}
+
+.fighter-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 10px;
+    flex: 1;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.fighter-card h3 {
+    margin: 0 0 10px 0;
+    color: var(--color-accent);
+}
+
+.fighter-card p { margin: 5px 0; }
+.fragments-gain { color: #4caf50; font-size: 0.9em; }
+
+#modal-monster-progress-bar {
+    width: 100%;
+    height: 15px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+#modal-monster-progress-fill {
+    width: 100%;
+    height: 100%;
+    background-color: #ff5252;
+    border-radius: 8px;
+    transition: width 0.3s ease-out;
+}
+
+#damage-flash {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.5em;
+    font-weight: bold;
+    color: #ffc107;
+    opacity: 0;
+    text-shadow: 0 0 10px black;
+    pointer-events: none;
+}
+
+#damage-flash.active {
+    animation: flash-animation 0.8s ease-out;
+}
+
+@keyframes flash-animation {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+    50% { opacity: 1; transform: translate(-50%, -80%) scale(1.2); }
+    100% { opacity: 0; transform: translate(-50%, -110%) scale(1); }
 }
 
 .hidden {
