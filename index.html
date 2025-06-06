@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Forge des Dés 3D</title>
+    
+    <!-- Importation de la police "Poppins" depuis Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lien vers notre feuille de style -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Conteneur pour la scène 3D -->
+    <div id="scene-container"></div>
+
+    <!-- Conteneur pour l'interface utilisateur -->
+    <div id="ui-container">
+        
+        <!-- Conteneur pour les éléments du haut -->
+        <div id="top-ui">
+            <div id="top-buttons">
+                <div id="currency-display">Fragments: 1000</div>
+                <button id="inventory-button">Inventaire</button>
+            </div>
+            <div class="info-panel">
+                <h1 id="item-name-label">La Forge des Dés</h1>
+                <p id="item-stats-label">Cliquez pour forger votre destin !</p>
+            </div>
+        </div>
+
+        <!-- Conteneur pour les boutons du bas -->
+        <div id="bottom-actions">
+            <button id="dismantle-button" class="hidden">DÉMANTELER</button>
+            <button id="forge-button">FORGER</button>
+        </div>
+
+    </div>
+
+    <!-- Panneau de l'inventaire, caché par défaut -->
+    <div id="inventory-panel" class="hidden">
+        <div id="inventory-content">
+            <h2>Votre Collection</h2>
+            <div id="inventory-list">
+                <!-- Les objets seront ajoutés ici par JavaScript -->
+            </div>
+            <p id="inventory-instructions">Cliquez sur un objet pour le sélectionner pour une amélioration. Cliquez sur un second objet pour le sacrifier.</p>
+            <button id="inventory-close-button">Fermer</button>
+        </div>
+    </div>
+
+    <!-- Import Map pour les librairies JavaScript -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/",
+                "cannon-es": "https://unpkg.com/cannon-es@0.20.0/dist/cannon-es.js",
+                "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js"
+            }
+        }
+    </script>
+    
+    <!-- Lien vers notre script principal -->
+    <script type="module" src="main.js"></script>
+
+</body>
+</html>
