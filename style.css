@@ -1,345 +1,455 @@
-/* --- Variables de Design --- */
-:root {
-    --font-primary: 'Poppins', sans-serif;
-    --color-text: #f0f0f0;
-    --color-text-subtle: #a0a0b0;
-    --color-background: #12121c;
-    --color-accent: #8a2be2;
-    --panel-background: rgba(25, 25, 40, 0.85);
-}
+/* --- START OF FILE style.css --- */
 
-/* --- Réinitialisation et Base --- */
-body, html {
+/* --- Fonts & Reset --- */
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@500;700&display=swap');
+
+/* Un reset simple pour s'assurer que les styles du navigateur n'interfèrent pas */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: var(--font-primary);
-    color: var(--color-text);
-    background-color: var(--color-background);
 }
 
-/* --- Conteneurs Principaux --- */
-#scene-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+:root {
+    --board-size: 13;
+    --tile-size: clamp(30px, 7vw, 64px); /* Taille des tuiles responsive */
+
+    /* Couleurs améliorées */
+    --p1-color: #e74c3c; /* Rouge */
+    --p2-color: #3498db; /* Bleu */
+    --ui-bg: #2c3e50; /* Arrière-plan général sombre */
+    --ui-darker-bg: #212f3d; /* Arrière-plan pour les panneaux */
+    --ui-panel: #34495e; /* Couleur des panneaux */
+    --text-color: #ecf0f1; /* Texte clair */
+    --accent-color: #f39c12; /* Couleur d'accentuation (boutons, titres) */
+    --selected-glow: #e67e22; /* Lueur pour les éléments sélectionnés */
+
+    --font-main: 'Poppins', sans-serif;
+    --font-title: 'Bangers', cursive;
+
+    /* Ombres et arrondis */
+    --panel-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    --button-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    --button-active-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
 }
 
-#ui-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+html, body {
     height: 100%;
+    width: 100%;
+    overflow: hidden; /* Empêche le scroll global */
+    font-family: var(--font-main);
+    background-color: var(--ui-bg);
+    color: var(--text-color);
+    -webkit-tap-highlight-color: transparent; /* Supprime le surlignage au toucher sur mobile */
+    display: flex; /* Utilise flexbox pour le layout principal */
+    flex-direction: column; /* Empile les sections verticalement */
+}
+
+/* --- Menu & Layout --- */
+#main-menu { 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    gap: 2rem; /* Espacement en rem */
+    background-color: var(--ui-darker-bg); 
+}
+#main-menu h1 { 
+    font-family: var(--font-title); 
+    font-size: clamp(3rem, 10vw, 5rem); 
+    letter-spacing: 3px; 
+    color: var(--accent-color); /* Couleur accentuée */
+    text-shadow: 4px 4px 0px rgba(0,0,0,0.2); 
+    line-height: 1; /* S'assurer qu'il n'y a pas d'espace vertical excessif */
+}
+.menu-buttons {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    box-sizing: border-box;
-    pointer-events: none;
+    gap: 1rem; /* Espacement entre les boutons */
 }
+.menu-buttons button { 
+    padding: 0.8rem 1.5rem; /* Padding en rem */
+    font-size: clamp(1rem, 3vw, 1.2em); /* Taille de police responsive */
+    font-weight: 700; 
+    color: white; 
+    background: var(--accent-color); /* Couleur accentuée */
+    border: none; 
+    border-radius: var(--border-radius-md); 
+    cursor: pointer; 
+    transition: all 0.2s ease-in-out; /* Transition plus douce */
+    box-shadow: var(--button-shadow); 
+}
+.menu-buttons button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.3); }
+.menu-buttons button:active { transform: translateY(2px); box-shadow: var(--button-active-shadow); }
+.hidden { display: none !important; }
 
-/* --- Éléments du Haut --- */
-#top-ui {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
+#game-container { 
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+    width: 100%; 
+    background-color: var(--ui-bg); 
 }
-
-#top-buttons {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 90%;
-    max-width: 500px;
-    gap: 10px;
+#info-panel { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 0.5rem 1rem; 
+    background-color: var(--ui-darker-bg); 
+    box-shadow: var(--panel-shadow); 
+    z-index: 20; 
+    font-weight: 700; 
 }
-
-#currency-display {
-    background: rgba(0, 0, 0, 0.4);
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 1em;
-    font-weight: 600;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(5px);
-    white-space: nowrap;
-}
-
-#inventory-button, #battle-view-button {
-    pointer-events: all;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--color-text);
-    padding: 8px 16px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-family: var(--font-primary);
-    font-weight: 600;
-    font-size: 0.9em;
-    transition: background-color 0.2s ease;
-}
-#inventory-button:hover, #battle-view-button:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.info-panel {
-    background: var(--panel-background);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 15px 25px;
-    border-radius: 12px;
-    text-align: center;
-    width: 90%;
-    max-width: 500px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    transition: box-shadow 0.3s ease, border-color 0.3s ease;
-}
-
-#item-name-label {
-    margin: 0;
-    font-size: 1.3em;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    line-height: 1.4;
-}
-
-#item-stats-label {
-    margin: 8px 0 0;
-    font-size: 0.9em;
-    font-weight: 400;
-    color: var(--color-text-subtle);
-}
-
-/* --- Panneau Auto-Battler --- */
-#autobattle-panel {
-    display: none; /* Remplacé par la fenêtre modale */
-}
-
-/* --- Éléments du Bas --- */
-#bottom-actions {
-    width: 90%;
-    max-width: 500px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-}
-
-#forge-button {
-    pointer-events: all;
-    width: 100%;
-    padding: 18px 0;
-    font-size: 1.5em;
-    font-weight: 700;
-    color: white;
-    background: linear-gradient(45deg, #6a11cb, #2575fc);
-    border: none;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-@media (hover: hover) {
-    #forge-button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(106, 17, 203, 0.4);
-    }
-}
-
-#forge-button:active {
-    transform: translateY(1px) scale(0.98);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-#forge-button:disabled {
-    background: linear-gradient(45deg, #555, #777);
-    color: #aaa;
-    cursor: not-allowed;
-    box-shadow: none;
-    transform: none;
-}
-
-#dismantle-button {
-    pointer-events: all;
-    width: 100%;
-    padding: 14px 0;
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #ffdada;
-    background: transparent;
-    border: 2px solid #ff5252;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
-}
-
-#dismantle-button:hover {
-    background-color: #ff5252;
-    color: white;
-}
-
-/* --- Fenêtres Modales (Inventaire & Combat) --- */
-#inventory-panel, #battle-modal {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(8px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 100;
-    pointer-events: all;
-}
-
-#inventory-content, #battle-content {
-    background: var(--panel-background);
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    padding: 25px;
-    border-radius: 15px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    flex-direction: column;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-}
-
-#inventory-content h2, #battle-content h2 {
-    text-align: center;
-    margin-top: 0;
-}
-
-#inventory-list {
+#main-content-area { 
+    flex-grow: 1; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 1.5rem; /* Espacement entre le plateau et le panneau d'infos */
+    padding: 1rem; 
+    background: url('./img/grass_bg.png'); 
+    background-size: 256px; 
+    perspective: 1500px; 
+    transform-style: preserve-3d;
     overflow-y: auto;
-    padding-right: 10px;
-    flex-grow: 1;
+}
+#player-controls { 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 1rem; /* Espacement entre les cartes d'invocation */
+    padding: 0.8rem; 
+    background-color: var(--ui-darker-bg); 
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.3); 
+    z-index: 20; 
+    min-height: 80px; 
+    flex-wrap: wrap; /* Les cartes s'enroulent sur plusieurs lignes sur mobile */
 }
 
-.inventory-item {
-    background: rgba(0, 0, 0, 0.2);
-    margin-bottom: 10px;
-    padding: 10px 15px;
-    border-radius: 8px;
-    border-left: 5px solid gray;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+/* --- Top Panel UI --- */
+.player-info { 
+    text-align: center; 
+    font-size: clamp(1rem, 2.5vw, 1.1rem); /* Taille de police responsive */
 }
-
-.inventory-item:hover {
-    background: rgba(255, 255, 255, 0.1);
+.hp-display { 
+    font-size: clamp(1.2rem, 3.5vw, 1.4rem); /* Taille de police responsive */
 }
-
-.inventory-item.selected {
-    outline: 2px solid var(--color-accent);
-    background: rgba(138, 43, 226, 0.3);
+#p1-info { color: var(--p1-color); }
+#p2-info { color: var(--p2-color); }
+#turn-indicator { text-align: center; }
+#turn-indicator p { 
+    margin: 0 0 0.5rem 0; 
+    font-size: clamp(0.9rem, 2.5vw, 1rem); 
+    font-weight: 500; 
+    text-transform: uppercase; 
 }
-
-.inventory-item p { margin: 0; }
-.inventory-item .item-name { font-weight: 600; }
-.inventory-item .item-power { font-size: 0.9em; color: var(--color-text-subtle); }
-
-#inventory-instructions {
-    text-align: center;
-    font-size: 0.8em;
-    color: var(--color-text-subtle);
-    margin-top: 15px;
+#main-action-button { 
+    padding: 0.6rem 1.2rem; 
+    font-size: clamp(0.9rem, 2.5vw, 1em); 
+    font-weight: 700; 
+    cursor: pointer; 
+    border: none; 
+    border-radius: var(--border-radius-md); 
+    background: var(--accent-color); 
+    color: white; 
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.2); 
+    transition: all 0.1s ease-out; 
 }
-
-#inventory-close-button, #battle-modal-close-button {
-    pointer-events: all;
-    margin-top: 20px;
-    padding: 12px;
-    background-color: var(--color-accent);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-family: var(--font-primary);
-    font-weight: 600;
-    font-size: 1em;
-    cursor: pointer;
-    flex-shrink: 0;
+#main-action-button:disabled { 
+    background: #3c4962; 
+    color: #8a96b1; 
+    cursor: not-allowed; 
+    box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1); 
 }
+#main-action-button:not(:disabled):active { transform: translateY(2px); box-shadow: none; }
 
-/* --- Styles Spécifiques au Combat --- */
-#battle-arena {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    margin: 20px 0;
-    gap: 20px;
+/* --- Plateau & Tuiles --- */
+#game-board { 
+    display: grid; 
+    grid-template-columns: repeat(var(--board-size), var(--tile-size)); 
+    grid-template-rows: repeat(var(--board-size), var(--tile-size)); 
+    position: relative; 
+    transform: rotateX(25deg); 
+    transform-origin: center center; 
+    box-shadow: var(--panel-shadow); 
+    border-radius: var(--border-radius-md); 
+    transform-style: preserve-3d;
 }
-
-.fighter-card {
-    background: rgba(0, 0, 0, 0.2);
-    padding: 15px;
-    border-radius: 10px;
-    flex: 1;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
+.tile { 
+    width: var(--tile-size); 
+    height: var(--tile-size); 
+    box-sizing: border-box; 
+    position: relative; 
+    background-size: cover; 
+    border-radius: 0px; 
+    transition: transform 0.2s ease; 
+    transform-style: preserve-3d;
+    border: 1px solid rgba(0,0,0,0.1); 
 }
+.tile.terrain-normal { background-image: url('./img/stone_path.png'); }
+.tile.terrain-forest { background-image: url('./img/grass.png'); }
+.tile.terrain-wasteland { background-image: url('./img/wasteland.png'); }
+.tile.terrain-mountain { background-image: url('./img/mountain.png'); }
 
-.fighter-card h3 {
-    margin: 0 0 10px 0;
-    color: var(--color-accent);
-}
+.tile:hover { transform: scale(1.05); z-index: 2; }
 
-.fighter-card p { margin: 5px 0; }
-.fragments-gain { color: #4caf50; font-size: 0.9em; }
-
-#modal-monster-progress-bar {
-    width: 100%;
-    height: 15px;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 8px;
-    overflow: hidden;
-    margin-top: 10px;
-}
-
-#modal-monster-progress-fill {
-    width: 100%;
-    height: 100%;
-    background-color: #ff5252;
-    border-radius: 8px;
-    transition: width 0.3s ease-out;
-}
-
-#damage-flash {
+.tile .path-indicator {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2.5em;
-    font-weight: bold;
-    color: #ffc107;
-    opacity: 0;
-    text-shadow: 0 0 10px black;
+    top: 0;        
+    right: 0;      
+    bottom: 0;     
+    left: 0;       
+    border-radius: 0px; 
+    opacity: 0.35;   
+    z-index: 3;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
+}
+.tile.p1-path .path-indicator {
+    background-color: var(--p1-color); 
+}
+.tile.p2-path .path-indicator {
+    background-color: var(--p2-color); 
+}
+
+.tile .highlight-indicator { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: var(--highlight-color); 
+    opacity: 0.35; 
+    cursor: pointer; 
+    border-radius: 0px; 
+    z-index: 10; 
+}
+
+/* --- Unités (Monstres & Châteaux) --- */
+.unit-sprite {
+    position: absolute; 
+    left: 50%;          
+    bottom: 0;          
+    transform: translateX(-50%) rotateX(-25deg); 
+    transform-origin: bottom center; 
+    height: 120%; 
+    width: 100%; 
     pointer-events: none;
+    z-index: 5;
+    transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease; 
+    image-rendering: pixelated;
+    opacity: 0.8; 
+}
+.unit-sprite.selected { 
+    transform: translateX(-50%) rotateX(-25deg) scale(1.1); 
+    filter: drop-shadow(0 0 10px var(--selected-glow)); 
+    opacity: 1; 
+}
+.unit-sprite.has-acted { 
+    filter: grayscale(80%) brightness(0.7); 
+    opacity: 0.6; 
 }
 
-#damage-flash.active {
-    animation: flash-animation 0.8s ease-out;
+/* NOUVEAU: Style pour l'affichage de la 'power' des monstres */
+.monster-power-display {
+    position: absolute;
+    left: 50%; 
+    /* MODIFICATION : Nouvelle valeur pour translate Y pour le positionner plus haut */
+    transform: translate(-50%, -100%) rotateX(-25deg); /* Le -100% déplace l'élément de sa propre hauteur vers le haut */
+    transform-origin: center bottom; /* MODIFICATION : pour que la rotation se fasse depuis le bas du texte */
+    
+    background-color: rgba(0, 0, 0, 0.85); 
+    color: white;
+    font-family: var(--font-title);
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem); 
+    padding: 3px 8px; 
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.5); 
+    z-index: 6; 
+    white-space: nowrap; 
+    pointer-events: none; 
+    text-shadow: 2px 2px 3px rgba(0,0,0,0.8); 
 }
 
-@keyframes flash-animation {
-    0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
-    50% { opacity: 1; transform: translate(-50%, -80%) scale(1.2); }
-    100% { opacity: 0; transform: translate(-50%, -110%) scale(1); }
+
+/* --- Bottom Panel UI (Contrôles du joueur) --- */
+.control-card { 
+    position: relative; 
+    width: clamp(70px, 15vw, 80px); 
+    height: clamp(70px, 15vw, 80px); 
+    border-radius: var(--border-radius-lg); 
+    background-color: var(--ui-panel); 
+    box-shadow: var(--button-shadow); 
+    cursor: pointer; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    transition: all 0.1s ease-out; 
+    overflow: hidden; 
+    flex-shrink: 0; 
+}
+.control-card:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.3); }
+.control-card:active { transform: translateY(2px); box-shadow: var(--button-active-shadow); }
+.control-card.disabled { 
+    background-color: #2b3850; 
+    cursor: not-allowed; 
+    box-shadow: 0 4px 0px rgba(0,0,0,0.1); 
+    filter: grayscale(100%) brightness(0.8); 
+}
+.control-card.disabled:hover, .control-card.disabled:active { transform: none; box-shadow: 0 4px 0px rgba(0,0,0,0.1); }
+
+.control-card img { 
+    max-width: 90%;    
+    max-height: 90%;   
+    display: block;     
+    object-fit: contain; 
 }
 
-.hidden {
-    display: none !important;
+.control-card .crest-level { 
+    position: absolute; 
+    top: -0.3rem; 
+    right: -0.3rem; 
+    background-color: var(--accent-color); 
+    color: var(--text-color); 
+    font-weight: 700; 
+    border-radius: 50%; 
+    width: 1.5rem; 
+    height: 1.5rem; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    border: 2px solid var(--ui-darker-bg); 
+    font-size: 0.8rem;
 }
+
+/* --- Panneau d'informations du monstre --- */
+#monster-details-panel {
+    background-color: var(--ui-panel);
+    padding: 1rem;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--panel-shadow);
+    width: 200px; 
+    max-width: 90%; 
+    text-align: center;
+    color: var(--text-color);
+    transform: rotateX(0deg); 
+    transform-style: flat; 
+    z-index: 10; 
+    flex-shrink: 0; 
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#monster-details-panel h3 {
+    font-family: var(--font-title);
+    font-size: clamp(1.2rem, 3vw, 1.5rem); 
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    color: var(--accent-color); 
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.monster-stats p {
+    margin: 0.3rem 0;
+    font-size: clamp(0.8rem, 2.2vw, 0.9rem); 
+    display: flex; 
+    justify-content: space-between;
+    padding: 0 0.5rem;
+    line-height: 1.2;
+}
+
+.monster-stats span {
+    font-weight: 700;
+    color: var(--text-color);
+}
+
+
+/* --- Animations & Feedback Visuel --- */
+@keyframes popIn { 
+    from { opacity: 0; transform: scale(0.5); } 
+    to { opacity: 1; transform: scale(1); } 
+}
+.unit-spawn {
+    animation: popIn 0.3s ease-out;
+}
+
+@keyframes float-up { 
+    from { 
+        transform: translate(-50%, -50%) rotateX(-25deg); 
+        opacity: 1; 
+    } 
+    to { 
+        transform: translate(-50%, -50%) rotateX(-25deg) translateY(-60px) scale(0.8); 
+        opacity: 0; 
+    } 
+}
+.floating-text { 
+    position: absolute; 
+    font-family: var(--font-title); 
+    font-size: clamp(1.5rem, 5vw, 2em); 
+    font-weight: bold; 
+    pointer-events: none; 
+    z-index: 15; 
+    animation: float-up 1.5s ease-out forwards; 
+    -webkit-text-stroke: 2px black;
+    white-space: nowrap; 
+    text-shadow: 2px 2px 3px rgba(0,0,0,0.5);
+}
+.floating-text.damage { color: #ff4757; }
+.floating-text.heal { color: #2ecc71; }
+.floating-text.event { color: #ffd700; } 
+
+
+/* --- Modale --- */
+#modal-backdrop { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0,0,0,0.7); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 1000; 
+    backdrop-filter: blur(5px); 
+}
+#modal-content { 
+    background-color: var(--ui-panel); 
+    padding: 1.5rem; 
+    border-radius: var(--border-radius-md); 
+    text-align: center; 
+    max-width: 90%; 
+    box-shadow: var(--panel-shadow); 
+    border: 4px solid var(--ui-darker-bg); 
+    animation: popIn 0.3s ease-out; 
+}
+#modal-title { 
+    font-family: var(--font-title); 
+    letter-spacing: 2px; 
+    margin: 0 0 1rem 0; 
+    font-size: clamp(1.8rem, 5vw, 2em); 
+    color: var(--accent-color); 
+}
+#modal-message { 
+    margin: 0 0 1.5rem 0; 
+    font-size: clamp(1rem, 3vw, 1.2em); 
+}
+#modal-close-button { 
+    padding: 0.8rem 1.5rem; 
+    font-size: clamp(1rem, 3vw, 1.1em); 
+    font-weight: bold; 
+    color: white; 
+    background: var(--accent-color); 
+    border: none; 
+    border-radius: var(--border-radius-md); 
+    cursor: pointer; 
+    transition: all 0.2s; 
+    box-shadow: var(--button-shadow); 
+}
+#modal-close-button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.3); }
+#modal-close-button:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+/* --- END OF FILE style.css --- */

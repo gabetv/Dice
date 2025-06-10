@@ -2,95 +2,69 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Forge des Dés 3D</title>
-    
-    <!-- Importation de la police "Poppins" depuis Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Lien vers notre feuille de style -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Chroniques des Royaumes</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Conteneur pour la scène 3D -->
-    <div id="scene-container"></div>
-
-    <!-- Conteneur pour l'interface utilisateur -->
-    <div id="ui-container">
-        
-        <div id="top-ui">
-            <div id="top-buttons">
-                <div id="currency-display">Fragments: 1000</div>
-                <button id="battle-view-button">Voir le Combat</button>
-                <button id="inventory-button">Inventaire</button>
-            </div>
-            <div class="info-panel">
-                <h1 id="item-name-label">La Forge des Dés</h1>
-                <p id="item-stats-label">Cliquez pour forger votre destin !</p>
-            </div>
+    <!-- Menu principal pour choisir le mode de jeu -->
+    <div id="main-menu">
+        <h1>Chroniques des Royaumes</h1>
+        <div class="menu-buttons">
+            <button id="start-p-vs-ai">Joueur vs IA</button>
+            <button id="start-p-vs-p">Joueur vs Joueur</button>
+            <button id="start-ai-vs-ai">IA vs IA</button>
         </div>
-        
-        <!-- Ce panneau est maintenant caché et sert uniquement de conteneur logique si nécessaire -->
-        <div id="autobattle-panel" class="hidden"></div>
-
-        <div id="bottom-actions">
-            <button id="dismantle-button" class="hidden">DÉMANTELER</button>
-            <button id="forge-button">FORGER</button>
-        </div>
-
     </div>
 
-    <!-- Fenêtre modale pour la visualisation du combat, cachée par défaut -->
-    <div id="battle-modal" class="hidden">
-        <div id="battle-content">
-            <h2>Combat en Cours</h2>
-            <div id="battle-arena">
-                <div class="fighter-card" id="champion-card">
-                    <h3>Votre Champion</h3>
-                    <p>Puissance: <strong id="modal-champion-power">0</strong></p>
-                    <p class="fragments-gain">+<span id="modal-fragments-per-second">0</span> Frag/s</p>
-                </div>
-                <div class="fighter-card" id="monster-card">
-                    <h3 id="modal-monster-name">Monstre</h3>
-                    <div id="modal-monster-progress-bar">
-                        <div id="modal-monster-progress-fill"></div>
-                    </div>
-                    <!-- Élément pour l'animation de dégâts -->
-                    <div id="damage-flash"></div>
+    <!-- Conteneur principal du jeu, caché par défaut -->
+    <div id="game-container" class="hidden">
+        <header id="info-panel">
+            <div id="p1-info" class="player-info">
+                <span>Joueur 1</span>
+                <div class="hp-display">❤️ <span id="p1-hp">3</span></div>
+            </div>
+            <div id="turn-indicator">
+                <p id="game-phase-indicator"></p>
+                <button id="main-action-button"></button>
+            </div>
+            <div id="p2-info" class="player-info">
+                <span>Joueur 2</span>
+                <div class="hp-display">❤️ <span id="p2-hp">3</span></div>
+            </div>
+        </header>
+
+        <main id="main-content-area">
+            <div id="game-board">
+                <!-- Le plateau et les unités seront générés par JavaScript -->
+            </div>
+
+            <!-- Panneau d'information du monstre -->
+            <div id="monster-details-panel" class="hidden">
+                <h3 id="monster-name"></h3>
+                <div class="monster-stats">
+                    <p>POWER: <span id="monster-power"></span></p> 
+                    <p>PA: <span id="monster-pa"></span></p>
                 </div>
             </div>
-            <button id="battle-modal-close-button">Retour à la Forge</button>
-        </div>
-    </div>
 
-    <!-- Fenêtre modale de l'inventaire, cachée par défaut -->
-    <div id="inventory-panel" class="hidden">
-        <div id="inventory-content">
-            <h2>Votre Collection</h2>
-            <div id="inventory-list">
-                <!-- Les objets seront ajoutés ici par JavaScript -->
+        </main>
+        
+        <footer id="player-controls">
+             <!-- Les dés et les cartes d'invocation seront générés ici -->
+        </footer>
+
+        <!-- Modale pour les messages de fin de partie -->
+        <div id="modal-backdrop" class="hidden">
+            <div id="modal-content">
+                <h2 id="modal-title"></h2>
+                <p id="modal-message"></p>
+                <button id="modal-close-button">OK</button>
             </div>
-            <p id="inventory-instructions">Cliquez sur un objet pour le sélectionner. Cliquez sur un second pour le sacrifier.</p>
-            <button id="inventory-close-button">Fermer</button>
         </div>
     </div>
 
-    <!-- Import Map pour les librairies JavaScript -->
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.158.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.158.0/examples/jsm/",
-                "cannon-es": "https://unpkg.com/cannon-es@0.20.0/dist/cannon-es.js",
-                "@tweenjs/tween.js": "https://unpkg.com/@tweenjs/tween.js@21.0.0/dist/tween.esm.js"
-            }
-        }
-    </script>
-    
-    <!-- Lien vers notre script principal -->
-    <script type="module" src="main.js"></script>
-
+    <!-- On charge le script principal du jeu -->
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
