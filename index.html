@@ -38,18 +38,21 @@
             <div id="game-board">
                 <!-- Le plateau et les unités seront générés par JavaScript -->
             </div>
-
-            <!-- Panneau d'information du monstre -->
-            <div id="monster-details-panel" class="hidden">
-                <h3 id="monster-name"></h3>
-                <div class="monster-stats">
-                    <p>POWER: <span id="monster-power"></span></p> 
-                    <p>PA: <span id="monster-pa"></span></p>
-                </div>
-            </div>
-
         </main>
         
+        <!-- NOUVEAU EMPLACEMENT ET STRUCTURE DU PANNEAU D'INFORMATION DU MONSTRE -->
+        <!-- Il est maintenant un enfant direct de game-container pour un positionnement absolu par-dessus le jeu -->
+        <div id="monster-details-panel" class="hidden-panel">
+            <button id="monster-panel-close-btn" class="close-btn">X</button> <!-- AJOUT : Bouton de fermeture -->
+            <img id="monster-panel-img" src="" alt="Monster Image">
+            <h3 id="monster-name"></h3>
+            <div class="monster-stats">
+                <p>POWER: <span id="monster-power"></span></p> 
+                <p>PA: <span id="monster-pa"></span></p>
+            </div>
+        </div>
+        <!-- FIN NOUVEAU EMPLACEMENT -->
+
         <footer id="player-controls">
              <!-- Les dés et les cartes d'invocation seront générés ici -->
         </footer>

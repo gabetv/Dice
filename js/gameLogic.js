@@ -10,13 +10,18 @@ export function createBoardData() {
     for (let y = 0; y < BOARD_HEIGHT; y++) {
         const row = [];
         for (let x = 0; x < BOARD_WIDTH; x++) {
-            let terrainType = 'FOREST';
-            if (y > 4 && y < 8) terrainType = 'WASTELAND';
-            if ((y > 0 && y < 12) && (x > 0 && x < 12) && !(y > 4 && y < 8)) terrainType = 'FOREST';
-            if (y === 0 || y === 12 || x === 0 || x === 12 || (y > 4 && y < 8 && x > 4 && x < 8)) {
+            let terrainType = 'FOREST'; 
+
+            // MODIFICATION: Nouvelle logique de terrain pour un plateau 9x9
+            if (y === 3 || y === 4 || y === 5) { 
                 terrainType = 'NORMAL';
             }
-            if ((x === 6 && (y === 3 || y === 9))) terrainType = 'MOUNTAIN';
+            if (y === 0 || y === 1 || y === BOARD_HEIGHT - 1 || y === BOARD_HEIGHT - 2) {
+                terrainType = 'NORMAL';
+            }
+            if ((x === 4 && y === 2) || (x === 4 && y === BOARD_HEIGHT - 3)) { 
+                 terrainType = 'MOUNTAIN';
+            }
 
             row.push({
                 x, y,
@@ -134,11 +139,37 @@ export function deployTile(pos) {
     return false;
 }
 
-
+// MODIFICATION: selectMonsterOnBoard gère l'affichage/masquage du panneau
 export function selectMonsterOnBoard(pos) {
-    if (pos && gameState.turn.monsterActions.has(`${pos.x},${pos.y}`)) return;
-    gameState.turn.selectedMonsterOnBoard = pos;
+    const prevSelected = gameState.turn.selectedMonsterOnBoard;
+    const isSameMonster = prevSelected && pos && prevSelected.x === pos.x && prevSelected.y === pos.y;
+
+    // Si on désélectionne ou clique sur le même monstre déjà sélectionné
+    if (!pos || isSameMonster) {
+        gameState.turn.selectedMonsterOnBoard = null;
+        ui.hideMonsterDetails(); // Cacher le panneau
+    } else {
+        // Si on sélectionne un nouveau monstre
+        const tile = gameState.board[pos.y][pos.x];
+        // S'assurer que c'est un monstre du joueur actuel et qu'il n'a pas déjà agi
+        if (tile.content?.type === 'MONSTER' && tile.ownerId === gameState.currentPlayerId && !gameState.turn.monsterActions.has(`${pos.x},${pos.y}`)) {
+            gameState.turn.selectedMonsterOnBoard = pos;
+            const monsterData = {
+                ...tile.content.data,
+                currentPower: tile.content.data.power,
+                basePower: MONSTER_DATABASE[tile.content.data.id].basePower,
+                remainingPa: gameState.turn.remainingPA.get(`${pos.x},${pos.y}`) || 0,
+                img: MONSTER_DATABASE[tile.content.data.id].img
+            };
+            ui.showMonsterDetails(monsterData, pos); // Afficher le panneau avec les données du monstre
+        } else {
+            // Si on clique sur une case non valide (monstre ennemi, case vide, monstre déjà agi)
+            gameState.turn.selectedMonsterOnBoard = null;
+            ui.hideMonsterDetails(); // Cacher le panneau
+        }
+    }
 }
+
 
 export function selectMonsterForSummon(monsterId) {
     if (gameState.turn.selectedMonsterToSummon === monsterId) {
@@ -154,7 +185,6 @@ export function placeMonster(monsterId, position) {
     const validLocations = getValidSummonLocations();
     if (!validLocations.some(l => l.x === position.x && l.y === position.y)) return false;
 
-    // MODIFICATION: Initialise la 'power' du monstre à sa 'basePower'
     const monsterData = { ...MONSTER_DATABASE[monsterId], power: MONSTER_DATABASE[monsterId].basePower };
     tile.content = { type: 'MONSTER', data: monsterData };
     gameState.turn.selectedMonsterToSummon = null;
@@ -180,7 +210,9 @@ export function moveMonster(from, to) {
         gameState.turn.monsterActions.set(newMonsterKey, true);
     }
     
-    selectMonsterOnBoard(to);
+    // MODIFICATION: Après un mouvement, le monstre est automatiquement sélectionné à sa nouvelle position
+    // Cela déclenchera la mise à jour du panneau si nécessaire.
+    selectMonsterOnBoard(to); 
     checkForCastleAttack(to);
 }
 
@@ -191,28 +223,29 @@ export function attackMonster(attackerPos, defenderPos) {
     const defender = defenderTile.content.data;
     const attackerKey = `${attackerPos.x},${attackerPos.y}`;
 
-    // MODIFICATION: Nouvelle logique de combat
-    const damageDealt = attacker.power; // Les dégâts infligés sont la 'power' de l'attaquant
-    defender.power -= damageDealt; // La 'power' du défenseur est réduite par la 'power' de l'attaquant
+    const damageDealt = attacker.power; 
+    defender.power -= damageDealt; 
 
     if (defender.power > 0) {
-        // Affiche la valeur de la 'power' retirée
         ui.showFloatingText(defenderPos, `-${damageDealt} POW`, 'damage');
     } else {
-        ui.showFloatingText(defenderPos, `KO!`, 'event'); // Monstre vaincu
+        ui.showFloatingText(defenderPos, `KO!`, 'event'); 
     }
 
     if (defender.power <= 0) {
-        defenderTile.content = null; // Le monstre est détruit
-        // Si le monstre est détruit, s'assurer de le retirer aussi des PA restants
+        defenderTile.content = null; 
         gameState.turn.remainingPA.delete(`${defenderPos.x},${defenderPos.y}`);
+        // MODIFICATION: Si le monstre sélectionné est détruit, désélectionner et cacher le panneau
+        if (gameState.turn.selectedMonsterOnBoard && gameState.turn.selectedMonsterOnBoard.x === defenderPos.x && gameState.turn.selectedMonsterOnBoard.y === defenderPos.y) {
+            selectMonsterOnBoard(null);
+        }
     }
 
     const pa = gameState.turn.remainingPA.get(attackerKey) || 0;
     gameState.turn.remainingPA.set(attackerKey, pa - 1);
     if(pa - 1 <= 0) {
         gameState.turn.monsterActions.set(attackerKey, true);
-        selectMonsterOnBoard(null);
+        selectMonsterOnBoard(null); // Désélectionne le monstre s'il n'a plus de PA
     }
 }
 
@@ -234,6 +267,7 @@ export function rollDice() {
     gameState.turn.movePoints = 3;
     gameState.gamePhase = 'BUILD_PHASE';
     ui.logMessage(`Début de la phase de construction. ${gameState.turn.movePoints} points de mouvement.`, 'info');
+    selectMonsterOnBoard(null); // Désélectionne tout et cache le panneau au début d'une nouvelle phase
 }
 
 export function startActionPhase() {
@@ -244,11 +278,11 @@ export function startActionPhase() {
 
     gameState.board.forEach(row => row.forEach(tile => {
         if (tile.content?.type === 'MONSTER' && tile.ownerId === gameState.currentPlayerId) {
-            // S'assurer que le monstre a une propriété 'power' pour les PA
             gameState.turn.remainingPA.set(`${tile.x},${tile.y}`, tile.content.data.pa);
         }
     }));
     ui.logMessage("Début de la phase d'action.", 'info');
+    selectMonsterOnBoard(null); // Désélectionne tout et cache le panneau au début d'une nouvelle phase
 }
 
 export function endTurn() {
@@ -256,5 +290,6 @@ export function endTurn() {
     gameState.currentPlayerId = gameState.currentPlayerId === 1 ? 2 : 1;
     gameState.gamePhase = 'ROLL_PHASE';
     gameState.turn.selectedMonsterOnBoard = null;
+    ui.hideMonsterDetails(); // Cacher le panneau à la fin du tour
 }
 // --- END OF FILE gameLogic.txt ---

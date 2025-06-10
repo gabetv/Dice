@@ -12,7 +12,7 @@ const boardElement = document.getElementById('game-board');
 const mainActionButton = document.getElementById('main-action-button');
 const playerControlsElement = document.getElementById('player-controls');
 
-let isGameOverHandled = false; // Flag pour s'assurer que le modal de fin de partie n'apparaît qu'une fois
+let isGameOverHandled = false; 
 
 // --- Initialisation du Jeu ---
 function setupMenu() {
@@ -23,7 +23,7 @@ function setupMenu() {
 
 async function startGame(mode) {
     gameState.gameMode = mode;
-    isGameOverHandled = false; // Réinitialiser le flag à chaque nouvelle partie
+    isGameOverHandled = false; 
     switch (mode) {
         case 'P_VS_AI': gameState.players[0].isAI = false; gameState.players[1].isAI = true; break;
         case 'P_VS_P': gameState.players[0].isAI = false; gameState.players[1].isAI = false; break;
@@ -38,25 +38,17 @@ async function initGame() {
     logic.createBoardData();
     ui.createBoardElements();
     setupGameEventListeners();
-    // Le premier appel à updateAllUI va maintenant déclencher le tour de la première IA si nécessaire
     await updateAllUI(); 
-    // L'ancienne logique pour lancer le premier tour d'IA est maintenant gérée dans updateAllUI
-    // const firstPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
-    // if (firstPlayer.isAI) {
-    //     await ai.playAITurn(updateAllUI);
-    // }
 }
 
 // --- Boucle de Mise à Jour de l'UI ---
-// Cette fonction est maintenant ASYNC pour gérer les tours de l'IA
 async function updateAllUI() {
-    ui.render(); // La fonction de rendu unique met à jour tous les éléments visuels
+    ui.render(); 
 
     const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
     
-    // N'affiche les surlignages que si c'est un joueur humain
     if (!currentPlayer.isAI) {
-        ui.clearHighlights(); // Toujours effacer avant de redessiner
+        ui.clearHighlights(); 
         if (gameState.gamePhase === 'BUILD_PHASE') {
             ui.highlightTiles(logic.getValidDeployLocations(), 'deploy');
             if (gameState.turn.selectedMonsterToSummon) {
@@ -69,17 +61,13 @@ async function updateAllUI() {
         }
     }
 
-    // NOUVEAU : Gérer le déroulement automatique des tours de l'IA
-    // Si c'est la phase de lancer, que le joueur actuel est une IA, et que le jeu n'est pas terminé
     if (gameState.gamePhase === 'ROLL_PHASE' && currentPlayer.isAI && !isGameOverHandled) {
-        // Ajouter un petit délai pour permettre à l'UI de se rafraîchir et montrer "L'IA réfléchit..."
         await new Promise(resolve => setTimeout(resolve, 500)); 
-        await ai.playAITurn(updateAllUI); // L'IA joue son tour, et appellera updateAllUI à la fin
+        await ai.playAITurn(updateAllUI); 
     }
 
-    // Gérer la fin de partie (doit être la dernière vérification pour éviter les boucles infinies)
     if (gameState.gamePhase === 'GAME_OVER' && !isGameOverHandled) {
-        isGameOverHandled = true; // Empêche des appels multiples
+        isGameOverHandled = true; 
         const winner = gameState.players.find(p => p.hp > 0);
         setTimeout(() => {
             const message = winner ? `Le Joueur ${winner.id} a gagné !` : "C'est une égalité !";
@@ -93,7 +81,6 @@ function setupGameEventListeners() {
     // Clic sur le bouton d'action principal
     mainActionButton.addEventListener('click', async () => {
         const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
-        // Si c'est le tour de l'IA ou que le jeu est terminé, le bouton est désactivé
         if (currentPlayer.isAI || isGameOverHandled) return; 
         
         const phase = gameState.gamePhase;
@@ -104,11 +91,11 @@ function setupGameEventListeners() {
         } else if (phase === 'ACTION_PHASE') {
             logic.endTurn();
         }
-        await updateAllUI(); // Appel asynchrone pour permettre à l'IA de jouer si nécessaire
+        await updateAllUI(); 
     });
 
     // Clics sur le plateau de jeu
-    boardElement.addEventListener('click', async (event) => { // Rendre async pour pouvoir attendre updateAllUI
+    boardElement.addEventListener('click', async (event) => { 
         const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
         if (currentPlayer.isAI || isGameOverHandled) return;
 
@@ -125,13 +112,14 @@ function setupGameEventListeners() {
                 logic.deployTile({ x, y });
             }
         } else if (gameState.gamePhase === 'ACTION_PHASE') {
-            handleActionPhaseClick(x, y);
+            // MODIFICATION: Simplifier l'appel, handleActionPhaseClick gère la sélection
+            handleActionPhaseClick(x, y); 
         }
-        await updateAllUI(); // Appel asynchrone pour rafraîchir l'UI après l'action du joueur
+        await updateAllUI(); 
     });
 
     // Clics sur les contrôles du joueur (cartes d'invocation)
-    playerControlsElement.addEventListener('click', async (event) => { // Rendre async
+    playerControlsElement.addEventListener('click', async (event) => { 
         const currentPlayer = gameState.players.find(p => p.id === gameState.currentPlayerId);
         if (currentPlayer.isAI || isGameOverHandled) return;
         
@@ -142,15 +130,17 @@ function setupGameEventListeners() {
             const monsterId = parseInt(card.dataset.monsterId);
             logic.selectMonsterForSummon(monsterId);
         }
-        await updateAllUI(); // Appel asynchrone
+        await updateAllUI(); 
     });
 }
 
+// MODIFICATION: handleActionPhaseClick utilise directement logic.selectMonsterOnBoard
 function handleActionPhaseClick(x, y) {
     const selected = gameState.turn.selectedMonsterOnBoard;
     const clickedTile = gameState.board[y][x];
 
     if (selected) {
+        // Le joueur a déjà un monstre sélectionné, il veut attaquer ou se déplacer
         const canMoveTo = logic.getValidMovementLocations(selected.x, selected.y).some(l => l.x === x && l.y === y);
         const canAttack = logic.getValidAttackLocations(selected.x, selected.y).some(l => l.x === x && l.y === y);
 
@@ -159,12 +149,14 @@ function handleActionPhaseClick(x, y) {
         } else if (canMoveTo) {
             logic.moveMonster(selected, { x, y });
         } else {
-            logic.selectMonsterOnBoard(null);
-            if (clickedTile.content?.type === 'MONSTER' && clickedTile.ownerId === gameState.currentPlayerId) {
-                logic.selectMonsterOnBoard({ x, y });
-            }
+            // Clic ailleurs, on désélectionne ou sélectionne un autre monstre
+            // Si on clique sur un autre monstre du joueur, logic.selectMonsterOnBoard le gérera
+            // Si on clique sur un monstre ennemi ou une case vide, logic.selectMonsterOnBoard(null) le gérera
+            logic.selectMonsterOnBoard({ x, y }); // Tente de sélectionner la nouvelle case
         }
-    } else if (clickedTile.content?.type === 'MONSTER' && clickedTile.ownerId === gameState.currentPlayerId) {
+    } else { 
+        // Le joueur n'a pas de monstre sélectionné et clique sur une case
+        // logic.selectMonsterOnBoard gérera si c'est un monstre valide ou non
         logic.selectMonsterOnBoard({ x, y });
     }
 }

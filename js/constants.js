@@ -1,7 +1,7 @@
 // --- START OF FILE constants.txt ---
 
-export const BOARD_WIDTH = 13;
-export const BOARD_HEIGHT = 13;
+export const BOARD_WIDTH = 9; // MODIFICATION: Réduction de la largeur
+export const BOARD_HEIGHT = 9; // MODIFICATION: Réduction de la hauteur
 export const DICE_COUNT = 3;
 export const MAX_MONSTERS_PER_PLAYER = 5;
 
@@ -47,7 +47,7 @@ export const MONSTER_DATABASE = {
         basePower: 3,
         pa: 3,
         img: "beast_warrior.png",
-        type: "MONSTER" // AJOUT : Type pour identifier l'unité
+        type: "MONSTER"
     },
     2: {
         id: 2,
@@ -55,7 +55,7 @@ export const MONSTER_DATABASE = {
         basePower: 4,
         pa: 2,
         img: "red_dragon.png",
-        type: "MONSTER" // AJOUT : Type pour identifier l'unité
+        type: "MONSTER"
     },
     3: {
         id: 3,
@@ -63,7 +63,7 @@ export const MONSTER_DATABASE = {
         basePower: 2,
         pa: 4,
         img: "dark_assassin.png",
-        type: "MONSTER" // AJOUT : Type pour identifier l'unité
+        type: "MONSTER"
     },
 
     // Joueur 2 (Bleu)
@@ -73,7 +73,7 @@ export const MONSTER_DATABASE = {
         basePower: 4,
         pa: 3,
         img: "armored_knight.png",
-        type: "MONSTER" // AJOUT : Type pour identifier l'unité
+        type: "MONSTER"
     },
     5: {
         id: 5,
@@ -81,7 +81,7 @@ export const MONSTER_DATABASE = {
         basePower: 3,
         pa: 3,
         img: "sea_serpent.png",
-        type: "MONSTER" // AJOUT : Type pour identifier l'unité
+        type: "MONSTER"
     },
     6: {
         id: 6,
@@ -89,15 +89,15 @@ export const MONSTER_DATABASE = {
         basePower: 2,
         pa: 4,
         img: "kappa_trickster.png",
-        type: "MONSTER" // AJOUT : Type pour identifier l'unité
+        type: "MONSTER"
     }
 };
 
 // Structures (Châteaux, Tours)
 export const STRUCTURE_DATABASE = {
-    P1_CASTLE: { name: 'Château Rouge', img: 'castle_p1.png', type: "CASTLE" }, // AJOUT : Type pour identifier la structure
-    P2_CASTLE: { name: 'Château Bleu', img: 'castle_p2.png', type: "CASTLE" },  // AJOUT : Type pour identifier la structure
-    TOWER: { name: 'Tour de Guet', img: 'tower.png', type: "STRUCTURE" } // Exemple si vous ajoutez des tours
+    P1_CASTLE: { name: 'Château Rouge', img: 'castle_p1.png', type: "CASTLE" },
+    P2_CASTLE: { name: 'Château Bleu', img: 'castle_p2.png', type: "CASTLE" },
+    TOWER: { name: 'Tour de Guet', img: 'tower.png', type: "STRUCTURE" }
 };
 
 // Icônes de l'UI

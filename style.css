@@ -11,41 +11,48 @@
 }
 
 :root {
-    --board-size: 13;
-    --tile-size: clamp(30px, 7vw, 64px); /* Taille des tuiles responsive */
+    --board-size: 9; 
+    --tile-size: clamp(40px, 10vw, 72px); 
 
     /* Couleurs améliorées */
-    --p1-color: #e74c3c; /* Rouge */
-    --p2-color: #3498db; /* Bleu */
-    --ui-bg: #2c3e50; /* Arrière-plan général sombre */
-    --ui-darker-bg: #212f3d; /* Arrière-plan pour les panneaux */
-    --ui-panel: #34495e; /* Couleur des panneaux */
-    --text-color: #ecf0f1; /* Texte clair */
-    --accent-color: #f39c12; /* Couleur d'accentuation (boutons, titres) */
-    --selected-glow: #e67e22; /* Lueur pour les éléments sélectionnés */
+    --p1-color: #e74c3c; 
+    --p2-color: #3498db; 
+    --ui-bg: #2c3e50; 
+    --ui-darker-bg: #212f3d; 
+    --ui-panel: #34495e; 
+    --text-color: #ecf0f1; 
+    --accent-color: #f39c12; 
+    --selected-glow: #e67e22; 
+
+    /* Nouvelles couleurs de terrain pour coller à l'image */
+    --terrain-normal-color: #e0b48c; 
+    --terrain-forest-color: #78a858; 
+    --terrain-wasteland-color: #a87858; 
+    --terrain-mountain-color: #8c8c8c; 
+
 
     --font-main: 'Poppins', sans-serif;
     --font-title: 'Bangers', cursive;
 
     /* Ombres et arrondis */
-    --panel-shadow: 0 4px 15px rgba(0,0,0,0.4);
-    --button-shadow: 0 4px 0 rgba(0,0,0,0.2);
-    --button-active-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    --panel-shadow: 0 6px 20px rgba(0,0,0,0.5); 
+    --button-shadow: 0 4px 0 rgba(0,0,0,0.3); 
+    --button-active-shadow: 0 2px 0 rgba(0,0,0,0.3);
     --border-radius-sm: 4px;
     --border-radius-md: 8px;
-    --border-radius-lg: 12px;
+    --border-radius-lg: 16px; 
 }
 
 html, body {
     height: 100%;
     width: 100%;
-    overflow: hidden; /* Empêche le scroll global */
+    overflow: hidden; 
     font-family: var(--font-main);
     background-color: var(--ui-bg);
     color: var(--text-color);
-    -webkit-tap-highlight-color: transparent; /* Supprime le surlignage au toucher sur mobile */
-    display: flex; /* Utilise flexbox pour le layout principal */
-    flex-direction: column; /* Empile les sections verticalement */
+    -webkit-tap-highlight-color: transparent; 
+    display: flex; 
+    flex-direction: column; 
 }
 
 /* --- Menu & Layout --- */
@@ -55,44 +62,46 @@ html, body {
     justify-content: center; 
     align-items: center; 
     height: 100vh; 
-    gap: 2rem; /* Espacement en rem */
+    gap: 2rem; 
     background-color: var(--ui-darker-bg); 
 }
 #main-menu h1 { 
     font-family: var(--font-title); 
     font-size: clamp(3rem, 10vw, 5rem); 
     letter-spacing: 3px; 
-    color: var(--accent-color); /* Couleur accentuée */
+    color: var(--accent-color); 
     text-shadow: 4px 4px 0px rgba(0,0,0,0.2); 
-    line-height: 1; /* S'assurer qu'il n'y a pas d'espace vertical excessif */
+    line-height: 1; 
 }
 .menu-buttons {
     display: flex;
     flex-direction: column;
-    gap: 1rem; /* Espacement entre les boutons */
+    gap: 1rem; 
 }
 .menu-buttons button { 
-    padding: 0.8rem 1.5rem; /* Padding en rem */
-    font-size: clamp(1rem, 3vw, 1.2em); /* Taille de police responsive */
+    padding: 0.8rem 1.5rem; 
+    font-size: clamp(1rem, 3vw, 1.2em); 
     font-weight: 700; 
     color: white; 
-    background: var(--accent-color); /* Couleur accentuée */
+    background: var(--accent-color); 
     border: none; 
     border-radius: var(--border-radius-md); 
     cursor: pointer; 
-    transition: all 0.2s ease-in-out; /* Transition plus douce */
+    transition: all 0.2s ease-in-out; 
     box-shadow: var(--button-shadow); 
 }
 .menu-buttons button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.3); }
 .menu-buttons button:active { transform: translateY(2px); box-shadow: var(--button-active-shadow); }
-.hidden { display: none !important; }
+.hidden { display: none !important; } 
 
 #game-container { 
+    position: relative; /* NOUVEAU: Permet le positionnement absolu des enfants comme le panneau */
     display: flex; 
     flex-direction: column; 
     height: 100%; 
     width: 100%; 
     background-color: var(--ui-bg); 
+    overflow: hidden; 
 }
 #info-panel { 
     display: flex; 
@@ -109,34 +118,33 @@ html, body {
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    gap: 1.5rem; /* Espacement entre le plateau et le panneau d'infos */
     padding: 1rem; 
-    background: url('./img/grass_bg.png'); 
-    background-size: 256px; 
+    background: url('./img/grass_bg.png') repeat center center; 
+    background-size: 150px; 
     perspective: 1500px; 
     transform-style: preserve-3d;
-    overflow-y: auto;
+    overflow: hidden; 
 }
 #player-controls { 
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    gap: 1rem; /* Espacement entre les cartes d'invocation */
+    gap: 1rem; 
     padding: 0.8rem; 
     background-color: var(--ui-darker-bg); 
     box-shadow: 0 -4px 10px rgba(0,0,0,0.3); 
     z-index: 20; 
     min-height: 80px; 
-    flex-wrap: wrap; /* Les cartes s'enroulent sur plusieurs lignes sur mobile */
+    flex-wrap: wrap; 
 }
 
 /* --- Top Panel UI --- */
 .player-info { 
     text-align: center; 
-    font-size: clamp(1rem, 2.5vw, 1.1rem); /* Taille de police responsive */
+    font-size: clamp(1rem, 2.5vw, 1.1rem); 
 }
 .hp-display { 
-    font-size: clamp(1.2rem, 3.5vw, 1.4rem); /* Taille de police responsive */
+    font-size: clamp(1.2rem, 3.5vw, 1.4rem); 
 }
 #p1-info { color: var(--p1-color); }
 #p2-info { color: var(--p2-color); }
@@ -188,12 +196,13 @@ html, body {
     border-radius: 0px; 
     transition: transform 0.2s ease; 
     transform-style: preserve-3d;
-    border: 1px solid rgba(0,0,0,0.1); 
+    border: 2px solid #212f3d; 
 }
-.tile.terrain-normal { background-image: url('./img/stone_path.png'); }
-.tile.terrain-forest { background-image: url('./img/grass.png'); }
-.tile.terrain-wasteland { background-image: url('./img/wasteland.png'); }
-.tile.terrain-mountain { background-image: url('./img/mountain.png'); }
+.tile.terrain-normal { background-color: var(--terrain-normal-color); background-image: none; } 
+.tile.terrain-forest { background-color: var(--terrain-forest-color); background-image: none; } 
+.tile.terrain-wasteland { background-color: var(--terrain-wasteland-color); background-image: none; } 
+.tile.terrain-mountain { background-image: url('./img/mountain.png'); background-size: cover; } 
+
 
 .tile:hover { transform: scale(1.05); z-index: 2; }
 
@@ -204,9 +213,10 @@ html, body {
     bottom: 0;     
     left: 0;       
     border-radius: 0px; 
-    opacity: 0.35;   
+    opacity: 0.5;   
     z-index: 3;
     transition: background-color 0.3s ease, opacity 0.3s ease;
+    border: 2px solid rgba(0,0,0,0.3); 
 }
 .tile.p1-path .path-indicator {
     background-color: var(--p1-color); 
@@ -222,10 +232,11 @@ html, body {
     width: 100%; 
     height: 100%; 
     background-color: var(--highlight-color); 
-    opacity: 0.35; 
+    opacity: 0.5; 
     cursor: pointer; 
     border-radius: 0px; 
     z-index: 10; 
+    border: 2px solid var(--accent-color); 
 }
 
 /* --- Unités (Monstres & Châteaux) --- */
@@ -235,13 +246,14 @@ html, body {
     bottom: 0;          
     transform: translateX(-50%) rotateX(-25deg); 
     transform-origin: bottom center; 
-    height: 120%; 
-    width: 100%; 
+    height: 140%; /* MODIFICATION: Sprites plus grands */
+    width: 140%; /* MODIFICATION: Sprites plus grands */
     pointer-events: none;
-    z-index: 5;
+    z-index: 5; 
     transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease; 
     image-rendering: pixelated;
-    opacity: 0.8; 
+    opacity: 1; 
+    filter: drop-shadow(2px 2px 3px rgba(0,0,0,0.4)); 
 }
 .unit-sprite.selected { 
     transform: translateX(-50%) rotateX(-25deg) scale(1.1); 
@@ -250,16 +262,15 @@ html, body {
 }
 .unit-sprite.has-acted { 
     filter: grayscale(80%) brightness(0.7); 
-    opacity: 0.6; 
+    opacity: 0.7; 
 }
 
-/* NOUVEAU: Style pour l'affichage de la 'power' des monstres */
+/* Style pour l'affichage de la 'power' des monstres sur le plateau */
 .monster-power-display {
     position: absolute;
     left: 50%; 
-    /* MODIFICATION : Nouvelle valeur pour translate Y pour le positionner plus haut */
-    transform: translate(-50%, -100%) rotateX(-25deg); /* Le -100% déplace l'élément de sa propre hauteur vers le haut */
-    transform-origin: center bottom; /* MODIFICATION : pour que la rotation se fasse depuis le bas du texte */
+    transform: translateX(-50%) translateY(-110%) rotateX(-25deg); /* Ajusté pour les sprites plus grands */
+    transform-origin: center bottom; 
     
     background-color: rgba(0, 0, 0, 0.85); 
     color: white;
@@ -268,10 +279,32 @@ html, body {
     padding: 3px 8px; 
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.5); 
-    z-index: 6; 
+    z-index: 7; 
     white-space: nowrap; 
     pointer-events: none; 
     text-shadow: 2px 2px 3px rgba(0,0,0,0.8); 
+}
+
+/* Style pour la barre de puissance */
+.monster-power-bar-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20%) rotateX(-25deg); /* Ajusté pour les sprites plus grands */
+    transform-origin: center bottom; 
+    
+    width: 60%; 
+    height: 8px; 
+    background-color: rgba(50, 50, 50, 0.7); 
+    border-radius: 3px;
+    overflow: hidden; 
+    z-index: 7; 
+    border: 1px solid rgba(255, 255, 255, 0.3); 
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+
+.monster-power-bar-fill {
+    height: 100%;
+    transition: width 0.3s ease-out; 
 }
 
 
@@ -325,36 +358,67 @@ html, body {
     font-size: 0.8rem;
 }
 
-/* --- Panneau d'informations du monstre --- */
+/* --- Panneau d'informations du monstre (OVERLAY) --- */
 #monster-details-panel {
+    position: absolute; 
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    
     background-color: var(--ui-panel);
-    padding: 1rem;
-    border-radius: var(--border-radius-md);
+    padding: 1.5rem; 
+    border-radius: var(--border-radius-lg); 
     box-shadow: var(--panel-shadow);
-    width: 200px; 
-    max-width: 90%; 
+    max-width: 300px; 
+    width: 85%; 
     text-align: center;
     color: var(--text-color);
-    transform: rotateX(0deg); 
-    transform-style: flat; 
-    z-index: 10; 
-    flex-shrink: 0; 
-    margin-left: auto;
-    margin-right: auto;
+    z-index: 100; /* Toujours au-dessus du jeu */
+    
+    display: flex; 
+    flex-direction: column;
+    align-items: center; 
+    gap: 0.8rem; 
+
+    opacity: 0;
+    pointer-events: none; /* Ne pas bloquer les clics quand caché */
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; 
 }
+
+/* Classe pour rendre le panneau visible */
+#monster-details-panel:not(.hidden-panel) { 
+    opacity: 1;
+    pointer-events: auto; /* Active les clics quand visible */
+    transform: translate(-50%, -50%) scale(1); /* Assure qu'il est à l'échelle normale */
+}
+
+/* Style de l'image du monstre dans le panneau */
+#monster-panel-img {
+    width: clamp(80px, 30vw, 150px); 
+    height: auto;
+    object-fit: contain;
+    image-rendering: pixelated;
+    border-radius: var(--border-radius-sm); 
+    border: 2px solid var(--ui-darker-bg);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
 
 #monster-details-panel h3 {
     font-family: var(--font-title);
-    font-size: clamp(1.2rem, 3vw, 1.5rem); 
+    font-size: clamp(1.5rem, 4vw, 2rem); 
     margin-top: 0;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0; 
     color: var(--accent-color); 
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
+.monster-stats {
+    width: 100%; 
+}
 .monster-stats p {
-    margin: 0.3rem 0;
-    font-size: clamp(0.8rem, 2.2vw, 0.9rem); 
+    margin: 0.2rem 0; 
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem); 
     display: flex; 
     justify-content: space-between;
     padding: 0 0.5rem;
@@ -364,6 +428,25 @@ html, body {
 .monster-stats span {
     font-weight: 700;
     color: var(--text-color);
+}
+
+/* NOUVEAU: Style pour le bouton de fermeture */
+.close-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0.2rem 0.5rem;
+    border-radius: 50%;
+    transition: background-color 0.2s ease-in-out;
+}
+.close-btn:hover {
+    background-color: rgba(255,255,255,0.1);
 }
 
 
@@ -452,4 +535,58 @@ html, body {
 }
 #modal-close-button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.3); }
 #modal-close-button:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,0.2); }
+
+/* --- Media Queries pour le Responsive Design --- */
+@media (max-width: 768px) {
+    #main-content-area {
+        flex-direction: column; 
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    /* Le panneau est déjà absolu, donc il ne s'empile pas.
+       On s'assure qu'il est bien centré et ne déborde pas. */
+    #monster-details-panel {
+        width: 90%; 
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); 
+        padding: 1rem; 
+        gap: 0.5rem; 
+    }
+
+    #player-controls {
+        flex-wrap: wrap; 
+        justify-content: center; 
+        padding: 0.5rem; 
+    }
+}
+
+@media (max-width: 480px) {
+    #info-panel {
+        padding: 0.3rem 0.5rem;
+    }
+
+    .player-info {
+        font-size: 0.9rem;
+    }
+
+    .hp-display {
+        font-size: 1.1rem;
+    }
+
+    #turn-indicator p {
+        font-size: 0.8rem;
+    }
+
+    #main-action-button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .control-card {
+        width: clamp(60px, 18vw, 70px); 
+        height: clamp(60px, 18vw, 70px);
+    }
+}
 /* --- END OF FILE style.css --- */
